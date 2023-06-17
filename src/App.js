@@ -1,25 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import React, { Component } from 'react';
+import Member from './components/members';
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hour: '00:00:00'
+    };
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <h2>Current time: {this.state.hour}</h2>
+        <Member member={{ name: 'John', email: 'teste', status: 'active' }} />
+      </div>
+    );
+  }
+
+
+
+  componentDidMount() {
+    setInterval(() => {
+      this.setState({
+        hour: new Date().toLocaleTimeString()
+      });
+    }, 1000);
+  }
 }
 
 export default App;
