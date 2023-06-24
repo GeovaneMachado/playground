@@ -5,7 +5,7 @@
 
 ### Fortune cookie
 This is first project in ReactJS. It is simple fortune cookie.
-Inserido algumas frases em um array e renderizado atraves da função math.randoom ao clicar no button raffle cookie
+Inserted some phrases in an array and rendered through the math.randoom function when clicking on the raffle cookie button
 
 ## Available Scripts
 
