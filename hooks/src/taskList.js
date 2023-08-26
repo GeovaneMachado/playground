@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState, useMemo, useCallback} from 'react';
 import './App.css';
 
 function TaskList() {
@@ -7,7 +7,20 @@ function TaskList() {
     const [edit, setEdit] = useState(false);
     const [id, setId] = useState(null);
 
-    const handleSubmit = (e) => {
+    useEffect(() => {
+        const parse = JSON.parse(localStorage.getItem('tasks'));
+        if (parse) {
+            setTasks(parse);
+        }
+    }, []);
+
+    useEffect(() => {
+        setTimeout(() => {
+        if (tasks) localStorage.setItem('tasks', JSON.stringify(tasks));
+        }, 1000);
+    }, [tasks]);
+
+    const handleSubmit = useCallback((e) => {
         e.preventDefault();
         if (edit) {
             let newTasks = tasks.map((item) => {
@@ -24,7 +37,7 @@ function TaskList() {
                 setTask('');
             }
         }
-    };
+    }, [edit, id, task, tasks])
 
     const removeTask = (id) => {
         setTasks(tasks.filter((item) => item.id !== id));
@@ -37,6 +50,7 @@ function TaskList() {
         setId(id);
     };
 
+    const totalTasks = useMemo(() => tasks.length, [tasks]);
     return (
         <div className="container">
             <h1>Todo App</h1>
@@ -49,7 +63,7 @@ function TaskList() {
                     <table>
                         <thead>
                         <tr>
-                            <th>Task</th>
+                            <th>Task ({totalTasks})</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
