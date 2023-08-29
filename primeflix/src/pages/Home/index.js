@@ -1,9 +1,12 @@
 import {useEffect, useState} from 'react';
 import api from '../../services/api';
+import {Link} from 'react-router-dom';
+import './home.css';
 
 //movie/now_playing?api_key=7a9429aff0a61b6aee27daf163193805&language=pt-BR
 function Home() {
     const [movies, setMovies] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function loadMovies() {
@@ -14,24 +17,33 @@ function Home() {
                         language: 'pt-BR'
                     }
                 });
-            setMovies(response.data.results);
+            setMovies(response.data.results.slice(0, 10));
+            setLoading(false);
 
         }
-        loadMovies().then(r => console.log(r));
+        loadMovies();
     }, []);
 
+    if (loading) {
+        return (
+            <div className="loading">
+                <h2>Loading movies...</h2>
+            </div>
+        )
+    }
     return (
         <div className="container">
-            <h1>Welcome Home Page</h1>
-            <ul>
-                {movies.map(movie => (
-                    <li key={movie.id}>
-                        <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title}/>
-                        <h2>{movie.title}</h2>
-                        <p>{movie.vote_average}/10</p>
-                    </li>
-                ))}
-            </ul>
+            <div className="list-movies">
+                {movies.map(movie => {
+                    return (
+                        <article key={movie.id}>
+                            <strong>{movie.title}</strong>
+                            <img src={`https://image.tmdb.org/t/p/original${movie.poster_path}`} alt={movie.title}/>
+                            <Link to={`/movies/${movie.id}`}>Acessar</Link>
+                        </article>
+                    )
+                })}
+            </div>
         </div>
     )
 }
