@@ -1,32 +1,45 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import api from '../../services/api';
+import { useParams, useNavigate } from 'react-router-dom';
+import api, {configGet} from '../../services/api';
+import {toast} from 'react-toastify';
 import './movies.css';
 
 function Movies() {
     const { id } = useParams();
+    const navigate = useNavigate();
+
     const [movie, setMovie] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function loadMovie() {
-            await api.get(`movie/${id}`,
-                {
-                    params: {
-                        api_key: '7a9429aff0a61b6aee27daf163193805',
-                        language: 'pt-BR'
-                    }
-                })
+            await api.get(`movie/${id}`, configGet)
                 .then(response => {
                     setMovie(response.data);
                 })
                 .catch(error => {
-                    console.log(error);
+                    navigate('/', {replace: true});
+                    return;
                 });
             setLoading(false);
         }
         loadMovie();
-    }, []);
+    }, [id, navigate]);
+
+    function saveMovie() {
+        const listMovies = localStorage.getItem('movies');
+        let movies = JSON.parse(listMovies) || [];
+
+        const hasMovie = movies.some(movieItem => movieItem.id === movie.id);
+        if (hasMovie) {
+            toast.warning('Você já possui esse filme salvo!');
+            return;
+        }
+
+        movies.push(movie);
+        localStorage.setItem('movies', JSON.stringify(movies));
+        toast.success('Filme salvo com sucesso!');
+    }
 
     if (loading) {
         return (
@@ -44,9 +57,9 @@ function Movies() {
             <span>{movie.overview}</span>
             <strong>Nota: {movie.vote_average} / 10</strong>
             <div className="area-buttons">
-                <button>Salvar</button>
+                <button onClick={saveMovie}>Salvar</button>
                 <button>
-                    <a href={"#"}>
+                    <a target="blank" rel="external" href={`https://youtube.com/results?search_query=${movie.title}+Trailer`}>
                         Trailer
                     </a>
                 </button>
